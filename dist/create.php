@@ -6,36 +6,41 @@ if(!isset($_SESSION['loggedin'])){
 }
 require_once("./connection.php");
 $dbh = dbcon();
+$profile = profiles($dbh, $_SESSION['profile_id']);
+foreach($profile as $profiles){
+   $name = $profiles['user_name'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instagram</title>
+  <title><?php echo $name; ?> • Instagram</title>
   <link rel="icon" href="./pictures/instalogo.png" type="image/x-icon">
   <link href="./output.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
   <script src="https://kit.fontawesome.com/382a0b3e8b.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
-    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+     // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-</script>
+      } else {
+         document.documentElement.classList.remove('dark')
+      }
+   </script>
 </head>
 <body class="bg-white dark:bg-black">
-<nav>
-  <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+   <nav>
+      <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
     <span class="sr-only">Open sidebar</span>
     <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
     <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
     </svg>
  </button>
  <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-[340px] h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-    <div class="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-black border-r border-instalines">
+    <div class="h-full px-3 py-4 overflow-y-auto border-r border-instalines bg-white dark:bg-black">
      <img id="instalogoimage" class="w-[140px] pt-7 pb-7" src="./pictures/instalogotekst.png" alt="instalogotekst">
      <ul class="space-y-2 font-medium text-xl">
         <li>
@@ -69,25 +74,25 @@ $dbh = dbcon();
            </a>
         </li>
         <li>
-           <a href="create.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+           <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
               <i class="fa-solid fa-plus text-black dark:text-white"></i>
               <span class="flex-1 ms-3 whitespace-nowrap">Create</span>
            </a>
         </li>
         <li>
            <a href="profile.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                           <?php
-                  $profile = profiles($dbh, $_SESSION['profile_id']);
+               <?php
+                     $profile = profiles($dbh, $_SESSION['profile_id']);
 
-                  foreach($profile as $profiles) {
-                  $encodedProfilePic = base64_encode($profiles['profilepicture']);
-                  if($profiles['profilepicture'] == NULL){
-                     echo '<img class="rounded-full w-7 h-7" src="./pictures/defaultprofile.jpg" alt="image">';
-                  }else{
-                     echo '<img class="rounded-full w-7 h-7" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image">';
-                  }
-                  }
-                  ?>
+                     foreach($profile as $profiles) {
+                     $encodedProfilePic = base64_encode($profiles['profilepicture']);
+                     if($profiles['profilepicture'] == NULL){
+                        echo '<img class="rounded-full w-7 h-7" src="./pictures/defaultprofile.jpg" alt="image">';
+                     }else{
+                        echo '<img class="rounded-full w-7 h-7" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image">';
+                     }
+                     }
+                     ?>
               <span class="flex-1 ms-3 whitespace-nowrap">Profile</span>
            </a>
         </li>
@@ -125,77 +130,44 @@ $dbh = dbcon();
   </div>
 </aside>
 </nav>
-<div class="flex items-center justify-center mt-8 -ml-96">
-<a href="./index.php"><p class="flex font-bold mr-[10px] text-lg dark:text-white">For you</p></a>
-<a href="#"><p class="flex font-bold text-lg text-gray-400">Following</p></a>
-</div>
-<hr class="h-px w-[40%] ml-[32%] mt-3 bg-gray-200 border-0 dark:bg-gray-700">
-
-<div class="flex flex-col items-center space-y-4 mt-4">
-        <!-- Sample images (replace these with your actual image sources) -->
-
-<?php
-$posts = post($dbh);
-
-foreach($posts as $post) {
-$encodedImage = base64_encode($post['picture']);
-$encodedProfilePic = base64_encode($post['profilepicture']);
-echo '<div class="block">
-<div class="h-[50px]">
-<div class="flex">';
-if($post['profilepicture'] == NULL){
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="./pictures/defaultprofile.jpg" alt="image">';
-}else{
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image">';
-}
-  echo'
-   <div class="flex flex-col mt-1.5">';
-   if($_SESSION['profile_id'] == $post['profile_id']){
-      echo '<a href="profile.php"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
-
-   }else{
-      echo '<a href="profilelooking.php?profile_id='.$post['profile_id'].'"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
-
-   }
- echo '<p class="text-xs ml-1 text-black dark:text-white">'.$post['location'].'</p>
-</div>
-</div>
-</div>
-<img class="border border-instalines" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 3" class="" width="390px" height="390px">
-<div class="h-[10%] bg-white dark:bg-black">
-   <div class="flex items-start mt-4 mb-4">
-      <form action="connection.php" method="post">
-         <input class="hidden" type="text" name="profile_id" value="'.$_SESSION['profile_id'].'">
-         <input class="hidden" type="text" name="post_id" value="'.$post['post_id'].'">';
-         if(likecheck($dbh, $post['post_id'], $_SESSION['profile_id'])){
-            echo'<button class="mr-2" type="submit" name="unlike"><i class="fa-solid fa-heart text-red-600 fa-xl"></i></button>';
-         }else{
-            echo'<button class="mr-2" type="submit" name="like"><i class="fa-regular fa-heart text-black dark:text-white fa-xl"></i></button>';
-         }
-         echo'
+<div class="flex items-center justify-center mt-8 ml-10 ">
+    <form action="connection.php" method="post" enctype="multipart/form-data">
+      <input type="text" name="profileid" class="hidden" value="<?php echo $_SESSION['profile_id'] ?>" />
+        <div class="flex">
+            <img class="mr-3 border border-instalines" id="preview-image" src="./pictures/defaultprofile.jpg" alt="Image 3" class="h-64" width="255px" height="255px">
+            <textarea class="h-64 w-96 text-black dark:text-white bg-white border border-instalines dark:bg-black dark:focus-within:text-white resize-none dark:focus-within:border-white" type="text" name="post_text" id="post_text" placeholder="Write a caption..."></textarea>                        
+         </div>
+         <div class="flex mt-3">
+            <input  type="file" name="postimage" id="postimage" class="text-black dark:text-white -mr-7" />
+            <div class="relative">
+               <input type="text" name="location" id="location" class="text-black dark:text-white bg-white border border-instalines dark:bg-black dark:focus-within:text-white dark:focus-within:border-white w-96 pl-4 pr-10" placeholder="Add your location...">
+               <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <i class="fas fa-map-marker-alt text-black dark:text-instalines"></i>
+               </span>
+            </div>
+         </div>
+         <div class="flex items-center justify-center mt-3">
+            <input class=" w-full rounded-lg font-semibold !bg-instablue text-black dark:text-white py-1 px-4 ml-10 cursor-pointer" type="submit" name="uploadpost" value="Upload post" />
+         </div>
       </form>
-      <a class="mr-2" href=""><i class="fa-regular fa-comment text-black dark:text-white fa-xl"></i></a>
-      <a class="" href=""><i class="fa-regular fa-share-from-square text-black dark:text-white fa-xl"></i></a>
-   </div>';
-   $likeCount = likecount($dbh, $post['post_id']);
-   if($likeCount == ''){
-      echo '<p class="text-black dark:text-white font-bold">0 likes</p>';
-   }
-   else{
-      echo'<p class="text-black dark:text-white font-bold">'.$likeCount.' likes</p>';
-   }
-   echo '
-   <p class="text-black dark:text-white font-bold mt-2">'.$post['user_name'].'</p>
-   <div class="w-[390px]"><p class="text-black dark:text-white">'.$post['post_text'].'</p></div>
-   <p class="text-instalines mt-2">View all comments</p>
-</div>
-<hr class="h-px w-full bg-instalines border">
-</div>';
-}
- 
-?>
 </div>
 <script src="darkmode.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+<script>
+        $(document).ready(function() {
+
+            // Preview image
+            $('#postimage').change(function() {
+
+                let reader = new FileReader();
+
+                reader.onload = (e) => {
+                    $('#preview-image').attr('src', e.target.result);
+                    $("#errorMs").hide();
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+         });
+</script>
 </body>
 </html>

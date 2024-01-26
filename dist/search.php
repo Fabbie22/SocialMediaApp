@@ -6,6 +6,7 @@ if(!isset($_SESSION['loggedin'])){
 }
 require_once("./connection.php");
 $dbh = dbcon();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,76 +126,58 @@ $dbh = dbcon();
   </div>
 </aside>
 </nav>
-<div class="flex items-center justify-center mt-8 -ml-96">
-<a href="./index.php"><p class="flex font-bold mr-[10px] text-lg dark:text-white">For you</p></a>
-<a href="#"><p class="flex font-bold text-lg text-gray-400">Following</p></a>
-</div>
-<hr class="h-px w-[40%] ml-[32%] mt-3 bg-gray-200 border-0 dark:bg-gray-700">
+<div class="flex flex-col items-center justify-center mt-8 ml-24">
+    <form action="search.php" method="post" class="flex items-center mb-4">
+        <input type="search" name="searchbar" class="w-80 dark:bg-black dark:text-white border border-gray-300 p-2">
+        <input type="submit" value="Search" name="searchsubmit" class="!bg-instablue p-2 text-white font-bold cursor-pointer ml-2">
+    </form>
+    <div class="flex">
+        <ul>
+            <?php
+                $searchQuery = isset($_POST['searchbar']) ? trim($_POST['searchbar']) : '';
+                    if (!empty($searchQuery)) {
+                        // Prepare and execute the SQL query
+                        $sql = "SELECT * FROM profile WHERE user_name LIKE :searchQuery";
+                        $stmt = $dbh->prepare($sql);
+                        $searchParam = "%$searchQuery%";
+                        $stmt->bindParam(':searchQuery', $searchParam, PDO::PARAM_STR);
+                        $stmt->execute();
 
-<div class="flex flex-col items-center space-y-4 mt-4">
-        <!-- Sample images (replace these with your actual image sources) -->
+                        // Fetch results
+                        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-<?php
-$posts = post($dbh);
+                        // Display the results or a message if no results found
+                        if (!empty($results)) {
+                            foreach ($results as $result) {
+                                echo '
+                                <div class="flex items-center mt-2">';
+                                
+                                $encodedProfilePic = base64_encode($result['profilepicture']);
+                                
+                                if ($result['profilepicture'] == NULL) {
+                                    echo '<a href="profilelooking.php?profile_id='.$result['profile_id'].'"><img class="rounded-full w-16 h-16 mr-2" src="./pictures/defaultprofile.jpg" alt="image"></a>';
+                                } else {
+                                    echo '<a href="profilelooking.php?profile_id='.$result['profile_id'].'"><img class="rounded-full w-16 h-16 mr-2" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image"></a>';
+                                }
+                                echo '
+                                <div>
+                                    <a href="profilelooking.php?profile_id='.$result['profile_id'].'"><li class="text-black dark:text-white font-bold text-xl">' . $result['user_name'] . '</li></a>
+                                    <p class="text-gray-400">'.$result['fullname'].'</p>
+                                </div>
+                                </div>';
+                            }
+                        } else {
+                            echo '<li class="text-black dark:text-white font-bold">Nothing found</li>';
+                        }
+                    } else {
+                        echo '<li class="text-black dark:text-white font-bold">Please enter a search</li>';
+                    }
+            ?>
+        </ul>
+    </div>
+</div>
 
-foreach($posts as $post) {
-$encodedImage = base64_encode($post['picture']);
-$encodedProfilePic = base64_encode($post['profilepicture']);
-echo '<div class="block">
-<div class="h-[50px]">
-<div class="flex">';
-if($post['profilepicture'] == NULL){
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="./pictures/defaultprofile.jpg" alt="image">';
-}else{
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image">';
-}
-  echo'
-   <div class="flex flex-col mt-1.5">';
-   if($_SESSION['profile_id'] == $post['profile_id']){
-      echo '<a href="profile.php"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
 
-   }else{
-      echo '<a href="profilelooking.php?profile_id='.$post['profile_id'].'"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
-
-   }
- echo '<p class="text-xs ml-1 text-black dark:text-white">'.$post['location'].'</p>
-</div>
-</div>
-</div>
-<img class="border border-instalines" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 3" class="" width="390px" height="390px">
-<div class="h-[10%] bg-white dark:bg-black">
-   <div class="flex items-start mt-4 mb-4">
-      <form action="connection.php" method="post">
-         <input class="hidden" type="text" name="profile_id" value="'.$_SESSION['profile_id'].'">
-         <input class="hidden" type="text" name="post_id" value="'.$post['post_id'].'">';
-         if(likecheck($dbh, $post['post_id'], $_SESSION['profile_id'])){
-            echo'<button class="mr-2" type="submit" name="unlike"><i class="fa-solid fa-heart text-red-600 fa-xl"></i></button>';
-         }else{
-            echo'<button class="mr-2" type="submit" name="like"><i class="fa-regular fa-heart text-black dark:text-white fa-xl"></i></button>';
-         }
-         echo'
-      </form>
-      <a class="mr-2" href=""><i class="fa-regular fa-comment text-black dark:text-white fa-xl"></i></a>
-      <a class="" href=""><i class="fa-regular fa-share-from-square text-black dark:text-white fa-xl"></i></a>
-   </div>';
-   $likeCount = likecount($dbh, $post['post_id']);
-   if($likeCount == ''){
-      echo '<p class="text-black dark:text-white font-bold">0 likes</p>';
-   }
-   else{
-      echo'<p class="text-black dark:text-white font-bold">'.$likeCount.' likes</p>';
-   }
-   echo '
-   <p class="text-black dark:text-white font-bold mt-2">'.$post['user_name'].'</p>
-   <div class="w-[390px]"><p class="text-black dark:text-white">'.$post['post_text'].'</p></div>
-   <p class="text-instalines mt-2">View all comments</p>
-</div>
-<hr class="h-px w-full bg-instalines border">
-</div>';
-}
- 
-?>
-</div>
 <script src="darkmode.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 </body>

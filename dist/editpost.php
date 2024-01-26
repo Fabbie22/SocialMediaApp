@@ -6,17 +6,30 @@ if(!isset($_SESSION['loggedin'])){
 }
 require_once("./connection.php");
 $dbh = dbcon();
+
+if(isset($_GET['post_id']))
+{
+  $post_id = $_GET['post_id'];
+  
+  $query = "SELECT * FROM post WHERE post_id = :post_id";
+  $statement = $dbh->prepare($query);
+  $data = [':post_id' => $post_id];
+  $statement->execute($data);
+  
+  $result = $statement->fetch(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instagram</title>
+  <title>Edit Post • Instagram</title>
   <link rel="icon" href="./pictures/instalogo.png" type="image/x-icon">
   <link href="./output.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
   <script src="https://kit.fontawesome.com/382a0b3e8b.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
     // On page load or when changing themes, best to add inline in `head` to avoid FOUC
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -125,77 +138,49 @@ $dbh = dbcon();
   </div>
 </aside>
 </nav>
-<div class="flex items-center justify-center mt-8 -ml-96">
-<a href="./index.php"><p class="flex font-bold mr-[10px] text-lg dark:text-white">For you</p></a>
-<a href="#"><p class="flex font-bold text-lg text-gray-400">Following</p></a>
+<div class="flex items-center justify-center mt-6">
+        <p class="text-black dark:text-white font-normal text-2xl -ml-40">Edit post</p>
 </div>
-<hr class="h-px w-[40%] ml-[32%] mt-3 bg-gray-200 border-0 dark:bg-gray-700">
-
-<div class="flex flex-col items-center space-y-4 mt-4">
-        <!-- Sample images (replace these with your actual image sources) -->
-
-<?php
-$posts = post($dbh);
-
-foreach($posts as $post) {
-$encodedImage = base64_encode($post['picture']);
-$encodedProfilePic = base64_encode($post['profilepicture']);
-echo '<div class="block">
-<div class="h-[50px]">
-<div class="flex">';
-if($post['profilepicture'] == NULL){
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="./pictures/defaultprofile.jpg" alt="image">';
-}else{
-   echo '<img class="rounded-full mx-1 my-1 w-11 h-11" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="image">';
-}
-  echo'
-   <div class="flex flex-col mt-1.5">';
-   if($_SESSION['profile_id'] == $post['profile_id']){
-      echo '<a href="profile.php"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
-
-   }else{
-      echo '<a href="profilelooking.php?profile_id='.$post['profile_id'].'"><p class="flex items-center font-bold text-sm ml-1 text-black dark:text-white">'.$post['user_name'].'</p></a>';
-
-   }
- echo '<p class="text-xs ml-1 text-black dark:text-white">'.$post['location'].'</p>
+<div class="flex items-center justify-center mt-14">
+    <div>
+        <?php
+        $encodedProfilePic = base64_encode($result['picture']);
+        if ($result['picture'] == NULL) {
+            echo '<img id="profilepicturechange" class="w-64 h-64" src="./pictures/defaultprofile.jpg" alt="image">';
+        } else {
+            echo '<img id="profilepicturechange" class="w-64 h-64" src="data:image/jpeg;base64,' . $encodedProfilePic . '" alt="image">';
+        }
+        ?>
+    </div>
+    <div class="ml-4">
+        <form action="connection.php" method="post" enctype="multipart/form-data">
+         <input class="hidden" type="text" name="postid" value="<?php echo $post_id ?>">
+         <textarea class="ml-10 w-64 h-64 dark:!bg-black rounded text-black dark:text-white border focus-within:border-black dark:focus-within:border-white" type="text" name="posttext" id="posttext"><?php echo $result['post_text'] ?></textarea>
+         <label for="profilepicture" class="block text-instablue cursor-pointer">
+            <input class="rounded-lg font-semibold !bg-instablue text-black dark:text-white py-1 px-4 ml-10 cursor-pointer" type="submit" name="updatepost" value="Submit" />
+            Change picture
+            <input type="file" name="profilepicture" id="profilepicture" class="hidden" />
+        </label>
+    </div>
 </div>
-</div>
-</div>
-<img class="border border-instalines" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 3" class="" width="390px" height="390px">
-<div class="h-[10%] bg-white dark:bg-black">
-   <div class="flex items-start mt-4 mb-4">
-      <form action="connection.php" method="post">
-         <input class="hidden" type="text" name="profile_id" value="'.$_SESSION['profile_id'].'">
-         <input class="hidden" type="text" name="post_id" value="'.$post['post_id'].'">';
-         if(likecheck($dbh, $post['post_id'], $_SESSION['profile_id'])){
-            echo'<button class="mr-2" type="submit" name="unlike"><i class="fa-solid fa-heart text-red-600 fa-xl"></i></button>';
-         }else{
-            echo'<button class="mr-2" type="submit" name="like"><i class="fa-regular fa-heart text-black dark:text-white fa-xl"></i></button>';
-         }
-         echo'
-      </form>
-      <a class="mr-2" href=""><i class="fa-regular fa-comment text-black dark:text-white fa-xl"></i></a>
-      <a class="" href=""><i class="fa-regular fa-share-from-square text-black dark:text-white fa-xl"></i></a>
-   </div>';
-   $likeCount = likecount($dbh, $post['post_id']);
-   if($likeCount == ''){
-      echo '<p class="text-black dark:text-white font-bold">0 likes</p>';
-   }
-   else{
-      echo'<p class="text-black dark:text-white font-bold">'.$likeCount.' likes</p>';
-   }
-   echo '
-   <p class="text-black dark:text-white font-bold mt-2">'.$post['user_name'].'</p>
-   <div class="w-[390px]"><p class="text-black dark:text-white">'.$post['post_text'].'</p></div>
-   <p class="text-instalines mt-2">View all comments</p>
-</div>
-<hr class="h-px w-full bg-instalines border">
-</div>';
-}
- 
-?>
-</div>
+</form>
 <script src="darkmode.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+<script>
+        $(document).ready(function() {
+
+            // Preview image
+            $('#profilepicture').change(function() {
+
+                let reader = new FileReader();
+
+                reader.onload = (e) => {
+                    $('#profilepicturechange').attr('src', e.target.result);
+                    $("#errorMs").hide();
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+         });
+</script>
 </body>
 </html>
