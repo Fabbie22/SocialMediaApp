@@ -7,9 +7,7 @@ if(!isset($_SESSION['loggedin'])){
 require_once("./connection.php");
 $dbh = dbcon();
 
-if(isset($_GET['profile_id']))
-{
-  $profile_id = $_GET['profile_id'];
+  $profile_id = $_SESSION['profile_id'];
   
   $query = "SELECT * FROM profile WHERE profile_id = :profile_id";
   $statement = $dbh->prepare($query);
@@ -17,7 +15,6 @@ if(isset($_GET['profile_id']))
   $statement->execute($data);
   
   $result = $statement->fetch(PDO::FETCH_ASSOC);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -164,7 +161,7 @@ if(isset($_GET['profile_id']))
 </div>
 <div class="flex items-center justify-center mt-10">
         <p class="text-black dark:text-white font-bold ml-36">Bio</p>
-        <textarea class="ml-10 w-64 dark:!bg-black rounded text-black dark:text-white border focus-within:border-black dark:focus-within:border-white" type="text" name="biography" id="biography"><?php echo $result['biography'] ?></textarea>
+        <textarea class="ml-10 w-64 dark:!bg-black rounded text-black dark:text-white border focus-within:border-black dark:focus-within:border-white" type="text" name="biography" id="biography"><?php echo htmlspecialchars($result['biography']) ?></textarea>
 </div>
 <div class="flex items-center justify-center mt-10">
    <input class="rounded-lg font-semibold !bg-instablue text-black dark:text-white py-1 px-4 ml-10 cursor-pointer" type="submit" name="upload" value="Submit" />

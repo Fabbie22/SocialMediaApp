@@ -186,7 +186,7 @@ if($post['profilepicture'] == NULL){
    }
    echo '
    <p class="text-black dark:text-white font-bold mt-2">'.$post['user_name'].'</p>
-   <div class="w-[390px]"><p class="text-black dark:text-white">'.$post['post_text'].'</p></div>
+   <div class="w-[390px]"><p class="text-black dark:text-white">'.htmlspecialchars($post['post_text']).'</p></div>
    <p class="text-instalines mt-2">View all comments</p>
 </div>
 <hr class="h-px w-full bg-instalines border">

@@ -147,7 +147,7 @@ echo'
     <div class="flex flex-col ml-6">
         <div class="flex items-start mb-5">
             <p class="text-black dark:text-white text-xl font-normal mr-3">'.$profiles['user_name'].'</p>
-            <a href="profileedit.php?profile_id='.$_SESSION['profile_id'].'"><button class="rounded-lg font-bold bg-instabuttonlight dark:bg-instabuttondark p-1 px-4 text-black dark:text-white mr-3">Edit Profile</button></a>
+            <a href="profileedit.php"><button class="rounded-lg font-bold bg-instabuttonlight dark:bg-instabuttondark p-1 px-4 text-black dark:text-white mr-3">Edit Profile</button></a>
             <i class="items-center justify-center mt-2 fa-solid fa-gear text-black dark:text-white"></i>
         </div>
         <div class="flex">';
@@ -163,7 +163,7 @@ echo'
             <p class="font-bold text-black dark:text-white mt-2">'.$profiles['fullname'].'</p>
         </div>
         <div class="flex w-[300px]">
-        <p class="font-normal text-black dark:text-white mt-2">'.$profiles['biography'].'</p>
+        <p class="font-normal text-black dark:text-white mt-2">'.htmlspecialchars($profiles['biography']).'</p>
     </div>
     </div>
 </div>
@@ -235,7 +235,7 @@ foreach($profilepost as $profileposts) {
                   </div>
                     <div class="flex flex-col w-full">
                         <div class="text-base leading-relaxed text-black dark:text-white border-b border-instalines">
-                            '.$profileposts['post_text'].'
+                            '.htmlspecialchars($profileposts['post_text']).'
                         </div>
                            <div class="p-4 md:p-5 overflow-y-auto max-h-[300px]">';
                            $comment = comments($dbh, $profileposts['post_id']);
@@ -252,7 +252,7 @@ foreach($profilepost as $profileposts) {
                               }
                               echo '
                               <div class="block">                              
-                                 <p class="text-black dark:text-white ml-2">'."<strong>".$comments['user_name']."</strong>"." ".$comments['comment_text'].'</p>
+                                 <p class="text-black dark:text-white ml-2">'."<strong>".$comments['user_name']."</strong>"." ".htmlspecialchars($comments['comment_text']).'</p>
                                  <p class="text-gray-500 dark:text-gray-400 text-sm ml-3">'.$datetimecomment.'</p>
                               </div>
                               </div>';
