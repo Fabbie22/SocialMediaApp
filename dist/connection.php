@@ -181,7 +181,7 @@ if (isset($_POST["upload"])) {
 
     // Check for success
     if ($result) {
-        header('location: ./index.php');
+        header('location: ./profile.php');
         exit;
     } else {
         echo "Database update failed.";
@@ -395,7 +395,7 @@ if (isset($_POST["updatepost"])) {
 
     // Check for success
     if ($result) {
-        header('location: ./index.php');
+        header('location: ./profile.php');
         exit;
     } else {
         echo "Database update failed.";
