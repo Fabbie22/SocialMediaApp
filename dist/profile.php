@@ -179,7 +179,7 @@ $profilepost = profileposts($dbh, $_SESSION['profile_id']);
 
 foreach($profilepost as $profileposts) {
 $encodedImage = base64_encode($profileposts['picture']);
-echo '<img data-modal-target="'.$profileposts['post_id'].'" data-modal-toggle="'.$profileposts['post_id'].'" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 1" class="w-[250px] h-[250px] hover:opacity-25 group-[appel]:">';
+echo '<img data-modal-target="'.$profileposts['post_id'].'" data-modal-toggle="'.$profileposts['post_id'].'" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 1" class="w-[250px] h-[250px] hover:opacity-25 cursor-pointer group-[appel]:">';
 }
 ?>
    </div>

@@ -161,7 +161,7 @@ if($post['profilepicture'] == NULL){
 </div>
 </div>
 </div>
-<img class="border border-instalines" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 3" class="" width="390px" height="390px">
+<img data-modal-target="'.$post['post_id'].'" data-modal-toggle="'.$post['post_id'].'" class="border border-instalines cursor-pointer" src="data:image/jpeg;base64,'.$encodedImage.'" alt="Image 3" width="390px" height="390px">
 <div class="h-[10%] bg-white dark:bg-black">
    <div class="flex items-start mt-4 mb-4">
       <form action="connection.php" method="post">
@@ -187,10 +187,83 @@ if($post['profilepicture'] == NULL){
    echo '
    <p class="text-black dark:text-white font-bold mt-2">'.$post['user_name'].'</p>
    <div class="w-[390px]"><p class="text-black dark:text-white">'.htmlspecialchars($post['post_text']).'</p></div>
-   <p class="text-instalines mt-2">View all comments</p>
+   <p data-modal-target="'.$post['post_id'].'" data-modal-toggle="'.$post['post_id'].'" class="text-instalines mt-2 cursor-pointer">View comments</p>
 </div>
 <hr class="h-px w-full bg-instalines border">
 </div>';
+   //Modal
+    $ModalImage = base64_encode($post['picture']);   
+    echo '<div id="'.$post['post_id'].'" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-4xl max-h-full">
+            <div class="relative bg-white rounded shadow dark:bg-gray-700">
+                <div class="flex items-center justify-between p-4 md:p-5 rounded-t">
+                    <div class="flex items-center">';
+                    if($post['profilepicture'] == NULL){
+                     echo '<img class="flex-shrink-0 rounded-full w-16 h-16" src="./pictures/defaultprofile.jpg" alt="image">';
+                  }else{
+                     echo '<img class="flex-shrink-0 rounded-full w-16 h-16" src="data:image/jpeg;base64,'.$encodedProfilePic.'" alt="profile-picture">';
+                  }
+                  echo '
+                        <div class="ml-4">
+                            <p class="font-bold text-black dark:text-white">'.$post['user_name'].'</p>
+                            <p class="text-sm text-black dark:text-white">'.$post['location'].'</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="'. $post['post_id'].'">
+                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                              </svg>
+                              <span class="sr-only">Close modal</span>
+                        </button>
+                     </div>
+                </div>
+                <div class="flex">
+                  <div class="max-h-[50%] max-w-[50%] left-0 mr-3 mb-4">
+                    <img src="data:image/jpeg;base64,'.$ModalImage.'" alt="image">
+                  </div>
+                    <div class="flex flex-col w-full">
+                        <div class="text-base leading-relaxed text-black dark:text-white border-b border-instalines">
+                            '.htmlspecialchars($post['post_text']).'
+                        </div>
+                           <div class="p-4 md:p-5 overflow-y-auto max-h-[300px]">';
+                           $comment = comments($dbh, $post['post_id']);
+
+                           foreach($comment as $comments){
+                              $datetimecomment = date('d-m-Y', strtotime($comments['datetime']));
+                              echo '
+                              <div class="flex items-center mb-2">';
+                              $commentProfile = base64_encode($comments['profilepicture']);
+                              if($comments['profilepicture'] == NULL){
+                                 echo '<img class="flex-shrink-0 items-center justify-center rounded-full w-8 h-8" src="./pictures/defaultprofile.jpg" alt="image">';
+                              }else{
+                                 echo '<img class="flex-shrink-0 items-center justify-center rounded-full w-8 h-8" src="data:image/jpeg;base64,'.$commentProfile.'" alt="profile-picture">';
+                              }
+                              echo '
+                              <div class="block">                              
+                                 <p class="text-black dark:text-white ml-2">'."<strong>".$comments['user_name']."</strong>"." ".htmlspecialchars($comments['comment_text']).'</p>
+                                 <p class="text-gray-500 dark:text-gray-400 text-sm ml-3">'.$datetimecomment.'</p>
+                              </div>
+                              </div>';
+                           }
+                           echo '
+                           </div>
+                           <div class="flex-grow flex items-end w-full">
+                            <div class="relative w-full">
+                            <form action="connection.php" method="post">
+                              <input type="hidden" name="profileid" value="'.$_SESSION['profile_id'].'">
+                              <input type="hidden" name="postid" value="'.$post['post_id'].'">
+                              <input class="w-full p-5 text-black dark:text-white dark:bg-gray-700 border-t border-instalines pr-10" placeholder="Add comment..." name="comment"/>
+                              <button class="absolute right-0 bottom-0 p-4 items-center text-instablue dark:instablue" type="submit" name="addcomment">Submit</button>
+                            </form>
+                              </div>                             
+                           </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>';
 }
  
 ?>
