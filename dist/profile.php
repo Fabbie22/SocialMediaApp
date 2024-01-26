@@ -206,7 +206,7 @@ foreach($profilepost as $profileposts) {
                     </div>
                     <div class="flex items-center space-x-2">
 
-                    <button id="dropdownMenuIconButton" data-dropdown-toggle="dropdown-'.$profileposts['post_id'].'" class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600" type="button">
+                    <button id="dropdownMenuIconButton" data-dropdown-toggle="dropdown-'.$profileposts['post_id'].'" class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-600" type="button">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
                     <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
                   </svg>
@@ -223,7 +223,10 @@ foreach($profilepost as $profileposts) {
                 <div id="dropdown-'.$profileposts['post_id'].'" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                    <li>
-                   <a href="editpost.php?post_id='.$profileposts['post_id'].'" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                   <form action="editpost.php" method="post">
+                     <input type="input" class="hidden" name="posteditid" value="'.$profileposts['post_id'].'">
+                     <input type="submit" name="editpost" value="Edit" class="block px-4 py-2 w-full text-left cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"></input>
+                   </form>
                    </li>
                    <li>
                    <a href="delete.php?post_id='.$profileposts['post_id'].'&profile_id='.$_SESSION['profile_id'].'" class="block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-500">Delete</a>

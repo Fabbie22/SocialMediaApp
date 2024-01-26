@@ -7,9 +7,9 @@ if(!isset($_SESSION['loggedin'])){
 require_once("./connection.php");
 $dbh = dbcon();
 
-if(isset($_GET['post_id']))
+if(isset($_POST['posteditid']))
 {
-  $post_id = $_GET['post_id'];
+  $post_id = $_POST['posteditid'];
   
   $query = "SELECT * FROM post WHERE post_id = :post_id";
   $statement = $dbh->prepare($query);
@@ -155,7 +155,7 @@ if(isset($_GET['post_id']))
     <div class="ml-4">
         <form action="connection.php" method="post" enctype="multipart/form-data">
          <input class="hidden" type="text" name="postid" value="<?php echo $post_id ?>">
-         <textarea class="ml-10 w-64 h-64 dark:!bg-black rounded text-black dark:text-white border focus-within:border-black dark:focus-within:border-white" type="text" name="posttext" id="posttext"><?php echo htmlspecialchars($result['post_text']) ?></textarea>
+         <textarea class="ml-10 w-64 h-64 dark:!bg-black rounded text-black dark:text-white border focus-within:border-black dark:focus-within:border-white" type="text" name="posttext" id="posttext"><?php echo htmlspecialchars($result['post_text']); ?></textarea>
          <label for="profilepicture" class="block text-instablue cursor-pointer">
             <input class="rounded-lg font-semibold !bg-instablue text-black dark:text-white py-1 px-4 ml-10 cursor-pointer" type="submit" name="updatepost" value="Submit" />
             Change picture
