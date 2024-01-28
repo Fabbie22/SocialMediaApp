@@ -1438,11 +1438,6 @@ video {
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
 }
 
-:is(.dark .dark\:bg-gray-800) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
-}
-
 :is(.dark .dark\:bg-instabuttondark) {
   --tw-bg-opacity: 1;
   background-color: rgb(55 55 54 / var(--tw-bg-opacity));

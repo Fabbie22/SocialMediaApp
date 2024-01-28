@@ -20,6 +20,10 @@ if(isset($_GET['profile_id']))
 $profile = profiles($dbh, $result['profile_id']);
 foreach($profile as $profiles){
    $name = $profiles['user_name'];
+
+   if($profiles['profile_id'] == $_SESSION['profile_id']){
+      header("location: profile.php");
+   }
 }
 ?>
 <!DOCTYPE html>
@@ -165,7 +169,9 @@ echo'
                echo'
                <button class="rounded-lg font-bold !bg-instabuttonlight dark:!bg-instabuttondark hover:!bg-instabuttonlighthover dark:hover:!bg-instabuttondarkhover p-1 px-4 text-black dark:text-white mr-3" type="submit" name="unfollow">Following</button>';
             }else{
-               echo '<button class="rounded-lg font-bold !bg-instabuttonblue hover:!bg-instabuttonbluehover p-1 px-4 text-white mr-3" type="submit" name="follow">Follow</button>';
+               if($profiles['profile_id'] != $_SESSION['profile_id']){
+                  echo '<button class="rounded-lg font-bold !bg-instabuttonblue hover:!bg-instabuttonbluehover p-1 px-4 text-white mr-3" type="submit" name="follow">Follow</button>';
+               }
             }
             echo'
             </form>
